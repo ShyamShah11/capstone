@@ -1,3 +1,3 @@
 # capstone
 
-Hand data taken from: https://www.kaggle.com/gti-upm/leapgestrecog/version/1
+Hand data taken from (not added to repo): https://www.kaggle.com/gti-upm/leapgestrecog/version/1
