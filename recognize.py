@@ -1,19 +1,12 @@
-import sys # system functions (ie. exiting the program)
-import os # operating system functions (ie. path building on Windows vs. MacOs)
-import time # for time operations
-import uuid # for generating unique file names
-import math # math functions
-
-import numpy as np # matrix operations (ie. difference between two matricies)
-import cv2 # (OpenCV) computer vision functions (ie. tracking)
-(major_ver, minor_ver, subminor_ver) = (cv2.__version__).split('.')
-print('OpenCV Version: {}.{}.{}'.format(major_ver, minor_ver, subminor_ver))
-
-
-import keras # high level api to tensorflow (or theano, CNTK, etc.) and useful image preprocessing
-from keras import backend as K
-from keras.preprocessing.image import ImageDataGenerator, load_img, img_to_array
-from keras.models import Sequential, load_model, model_from_json
-from keras.layers import Dense, Dropout, Activation, Flatten
-from keras.layers import Conv2D, MaxPooling2D
-print('Keras image data format: {}'.format(K.image_data_format()))
+import cv2                             
+import numpy as np #importing libraries
+cap = cv2.VideoCapture(0) #creating camera object
+while( cap.isOpened() ) :
+    ret,img = cap.read() #reading the frames
+    img = cv2.flip(img, 1) #flip image
+    gray = cv2.cvtColor(img,cv2.COLOR_BGR2GRAY) #convert to gray
+    ret,thresh = cv2.threshold(gray,70,255,cv2.THRESH_BINARY_INV+cv2.THRESH_OTSU)
+    cv2.imshow('input',thresh) #displaying the frames
+    k = cv2.waitKey(10)
+    if k == ord('q'): #exit when q is pressed
+        break
