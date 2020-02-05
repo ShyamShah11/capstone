@@ -7,7 +7,7 @@ total_files = 10
 
 def convert_to_data(directory_name, gesture, output):
     num_files = 0
-    f=open(output, "a")
+    f=open(output, "w") #switch to "a" to append
     f.write("[")
     directory = os.fsencode(directory_name)
     for file in os.listdir(directory):
@@ -34,3 +34,11 @@ def convert_to_data(directory_name, gesture, output):
 if __name__ == "__main__":
     data = convert_to_data("./gestures/leapGestRecog/00/01_palm/", "palm", "./data/palm.txt")
     data = convert_to_data("./gestures/leapGestRecog/00/02_l/", "l", "./data/l.txt")
+    data = convert_to_data("./gestures/leapGestRecog/00/03_fist/", "fist", "./data/fist.txt")
+    data = convert_to_data("./gestures/leapGestRecog/00/04_fist_moved/", "fist_moved", "./data/fist_moved.txt")
+    data = convert_to_data("./gestures/leapGestRecog/00/05_thumb/", "thumb", "./data/thumb.txt")
+    data = convert_to_data("./gestures/leapGestRecog/00/06_index/", "index", "./data/index.txt")
+    data = convert_to_data("./gestures/leapGestRecog/00/07_ok/", "ok", "./data/ok.txt")
+    data = convert_to_data("./gestures/leapGestRecog/00/08_palm_moved/", "palm_moved", "./data/palm_moved.txt")
+    data = convert_to_data("./gestures/leapGestRecog/00/09_c/", "c", "./data/c.txt")
+    data = convert_to_data("./gestures/leapGestRecog/00/10_down/", "down", "./data/down.txt")
