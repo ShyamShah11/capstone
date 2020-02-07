@@ -19,3 +19,4 @@ test_reshaped = test_reshaped.reshape(1, -1) #contains a single sample
 loaded_knn = pickle.load(open("trainedmodel.sav", "rb"))
 result = loaded_knn.predict(test_reshaped)
 print(gestures[result[0]])
+print(loaded_knn.predict_proba(test_reshaped))

@@ -2,6 +2,7 @@ import cv2
 import sys               
 import os
 import numpy as np #importing libraries
+import time
 np.set_printoptions(threshold=sys.maxsize)
 total_files = 10
 
@@ -17,10 +18,7 @@ def convert_to_data(directory_name, gesture, output):
         if filename.endswith(".png"): 
             img = cv2.imread(directory_name+filename) #reading the frames
             gray = cv2.cvtColor(img,cv2.COLOR_BGR2GRAY) #convert to gray
-            ret,thresh = cv2.threshold(gray,70,255,cv2.THRESH_BINARY_INV+cv2.THRESH_OTSU)
-            thresh = ~thresh #invert colors
-            #cv2.imshow('input',thresh) #displaying the frames
-            f.write(np.array2string(thresh, separator=", "))
+            f.write(np.array2string(gray, separator=", "))
             if num_files +1 < total_files:
                 f.write(", \n")
         else:
