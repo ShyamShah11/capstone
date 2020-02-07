@@ -6,7 +6,7 @@ import ast
 
 np.set_printoptions(threshold=sys.maxsize)
 
-gestures={0:"palm", 1:"l-shape"}
+gestures={0:"palm", 1:"l-shape", 2:"fist", 3:"thumb", 4:"index", 5:"ok", 6:"c"}
 
 f=open("./testdata/test.txt", "r")
 test = np.array(ast.literal_eval(f.read()))
