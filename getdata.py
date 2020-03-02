@@ -18,9 +18,10 @@ def convert_to_data(directory_name, gesture, output):
         if filename.endswith(".png"): 
             img = cv2.imread(directory_name+filename) #reading the frames
             gray = cv2.cvtColor(img,cv2.COLOR_BGR2GRAY) #convert to gray
-            delGray = np.delete(gray, [i for i in range(190)], axis=1) #delete first third of image (width)
+            ret,thresh = cv2.threshold(gray,70,255,cv2.THRESH_BINARY_INV+cv2.THRESH_OTSU)
+            delGray = np.delete(thresh, [i for i in range(190)], axis=1) #delete first third of image (width)
             delGray = np.delete(delGray, [i+300 for i in range(150)], axis=1) #delete last third of image (width)
-            f.write(np.array2string(gray, separator=", "))
+            f.write(np.array2string(delGray, separator=", "))
             cv2.imwrite("./testdata/test.png", delGray)
             print (np.shape(gray), np.shape(delGray))
             if num_files +1 < total_files:
