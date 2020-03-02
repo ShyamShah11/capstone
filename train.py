@@ -45,9 +45,29 @@ X_reshaped = X.reshape((nsamples, nx*ny))
 print(X_reshaped.shape)
 X_train, X_test, y_train, y_test = sklearn.model_selection.train_test_split(X_reshaped, y, test_size = 0.2, random_state=4)
 
-knn = sklearn.neighbors.KNeighborsClassifier(n_neighbors=4) #create model with 2 gestures
+knn = sklearn.neighbors.KNeighborsClassifier(n_neighbors=4, weights="distance") #create model with 2 gestures
 knn.fit(X_train, y_train) #train model
-#y_pred = knn.predict(X_test)
-#print (sklearn.metrics.accuracy_score(y_test,y_pred)) #checks accuracy of model
+
+#for testing purposes
+'''
+best_method = ""
+best_score = 0.0
+best_k = -1
+for method in ["uniform", "distance"] :
+    for k in range(1, 11) :
+        knn_clf = sklearn.neighbors.KNeighborsClassifier(n_neighbors=k, weights=method)
+        knn_clf.fit(X_train, y_train)
+        score = knn_clf.score(X_test, y_test)
+        scoretrain = knn_clf.score(X_train, y_train)
+        print ("k: " + str(k) + " method: " + method + " test score: " + str(score) + " train score: " + str(scoretrain) + "\n")
+        if score > best_score:
+            best_k = k
+            best_score = score
+            best_method = method
+ 
+print("best_k = " + str(best_k))
+print("best_score = " + str(best_score))
+print("best_method = " + best_method)
+'''
 
 pickle.dump(knn, open("trainedmodel.sav", "wb"))
