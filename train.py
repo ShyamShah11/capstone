@@ -45,7 +45,7 @@ X_reshaped = X.reshape((nsamples, nx*ny))
 print(X_reshaped.shape)
 X_train, X_test, y_train, y_test = sklearn.model_selection.train_test_split(X_reshaped, y, test_size = 0.2, random_state=4)
 
-knn = sklearn.neighbors.KNeighborsClassifier(n_neighbors=3) #create model with 2 gestures
+knn = sklearn.neighbors.KNeighborsClassifier(n_neighbors=4) #create model with 2 gestures
 knn.fit(X_train, y_train) #train model
 #y_pred = knn.predict(X_test)
 #print (sklearn.metrics.accuracy_score(y_test,y_pred)) #checks accuracy of model
