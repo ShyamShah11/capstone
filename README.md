@@ -1,4 +1,5 @@
 # capstone
+Using Python 3.7.6 and Tensorflow 2.0/2.1
 
 Hand data taken from (not added to repo): https://www.kaggle.com/gti-upm/leapgestrecog/version/1
 
