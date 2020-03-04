@@ -9,7 +9,8 @@ while( cap.isOpened() ) :
     #img = cv2.flip(img, 1) #flip image
     gray = cv2.cvtColor(img,cv2.COLOR_BGR2GRAY) #convert to gray
     ret,thresh = cv2.threshold(gray,70,255,cv2.THRESH_BINARY_INV+cv2.THRESH_OTSU)
-    inverse = 255-thresh
+    inverse = thresh
+    # inverse = 255-thresh
     cv2.imshow('input',inverse) #displaying the frames
     k = cv2.waitKey(10)
     if k == ord('q'): #exit when q is pressed

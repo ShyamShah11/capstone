@@ -2,3 +2,4 @@
 .vscode
 *.sav
 *.txt
+data/*
