@@ -36,7 +36,7 @@ def convert_to_data(directory_name, gesture, output):
 
 def create_white (output):
     f=open(output, "wb") #switch to "a" to append
-    thresh = 255 - np.zeros((total_files,240,640))
+    thresh = np.zeros((total_files,240,640))
     np.save(f, thresh)
     f.close()
     
