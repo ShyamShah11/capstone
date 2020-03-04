@@ -4,7 +4,7 @@ import os
 import numpy as np #importing libraries
 import time
 np.set_printoptions(threshold=sys.maxsize)
-total_files = 200
+total_files = 10
 
 def convert_to_data(directory_name, gesture, output):
     f=open(output, "wb") #switch to "a" to append
@@ -17,11 +17,11 @@ def convert_to_data(directory_name, gesture, output):
                 break
             filename = os.fsdecode(file)
             if filename.endswith(".png"): 
-                img = cv2.imread(directory_name+filename) #reading the frames
+                img = cv2.imread(directory_name+str(i)+gesture+filename) #reading the frames
                 gray = cv2.cvtColor(img,cv2.COLOR_BGR2GRAY) #convert to gray
                 if (thresh is None):
                     ret,thresh = cv2.threshold(gray,70,255,cv2.THRESH_BINARY_INV+cv2.THRESH_OTSU)
-               else:
+                else:
                     ret, threshNew = cv2.threshold(gray,70,255,cv2.THRESH_BINARY_INV+cv2.THRESH_OTSU)
                     if(thresh.shape == threshNew.shape):
                         thresh = np.stack((thresh, threshNew), axis=0)
