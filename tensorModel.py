@@ -115,6 +115,17 @@ test = test/ 255.0 #normalize test
 #test_reshaped = test_reshaped.reshape(1, -1) #contains a single sample
 
 test = tf.cast(test, tf.float32)
-result = model.predict(test)
-print(result)
-print(gestures[np.argmax(result[0])])
+#result = model.predict(test)
+#print(result)
+#print(gestures[np.argmax(result[0])])
+predict_dataset = tf.convert_to_tensor(test)
+# training=False is needed only if there are layers with different
+# behavior during training versus inference (e.g. Dropout).
+predictions = model(predict_dataset, training=False)
+
+for i, logits in enumerate(predictions):
+  print (logits)
+  class_idx = tf.argmax(logits).numpy()
+  p = tf.nn.softmax(logits)[class_idx]
+  name = gestures[class_idx]
+  print("Example {} prediction: {} ({:4.1f}%)".format(i, name, 100*p))
