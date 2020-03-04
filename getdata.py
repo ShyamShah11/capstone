@@ -17,7 +17,7 @@ def convert_to_data(directory_name, gesture, output):
                 break
             filename = os.fsdecode(file)
             if filename.endswith(".png"): 
-                img = cv2.imread(directory_name+filename) #reading the frames
+                img = cv2.imread(directory_name+str(i)+gesture+filename) #reading the frames
                 gray = cv2.cvtColor(img,cv2.COLOR_BGR2GRAY) #convert to gray
                 if (thresh is None):
                     ret,thresh = cv2.threshold(gray,70,255,cv2.THRESH_BINARY_INV+cv2.THRESH_OTSU)
