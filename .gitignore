@@ -1,3 +1,5 @@
 *.png
 .vscode
 *.sav
+*.txt
+data/*
