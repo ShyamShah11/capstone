@@ -6,6 +6,7 @@ import pickle
 import sys
 import ast
 import queue
+import textwrap
 
 #Obtaining the gesture area from settings file
 gFile = open("gestureBox.txt", 'r')
@@ -55,21 +56,14 @@ saveImages = False
 counter = 1
 frameCount = 0
 fileName = None
-timeCount = 1
+timeCount = 0
 while True:
     ret, frame = capture.read()
     if frame is None:
         break
-    cv.rectangle(frame, gestureArea[0], gestureArea[1], (0, 255, 0), 1) #adding the gesture area to camera
-    cv.imshow('Frame', frame)
-    keyboard = cv.waitKey(10)
-    if keyboard == ord('p') and counter <=5:
-        saveImages = True
     if saveImages:
-        #cv.putText(frame, str(timeCount),(10,50), cv.FONT_HERSHEY_SIMPLEX, 0.6, (255,255,255))
-        cv.imshow('Frame', frame)
-        #print(frameCount)
-        if frameCount < 360:
+        cv.putText(frame, str(timeCount),(10,50), cv.FONT_HERSHEY_SIMPLEX, 0.6, (255,255,255))
+        if frameCount < 300:
             if (frameCount % 60 == 0):
                 timeCount +=1
             roiFrame = frame[gestureArea[0][1]:gestureArea[1][1], gestureArea[0][0]:gestureArea[1][0]] #gesture area of current frame
@@ -87,14 +81,23 @@ while True:
             if fileName is None:
                 fileName = [thresh]
             else:
-                #print("check")
                 fileName = np.concatenate((fileName, [thresh]))
         else:
             saveImages = False
             frameCount = 0
             counter += 1
-            timeCount = 1 
-    if (counter>=5):
+            timeCount = 0
+    elif (counter <=5):
+        instructions1 = "Make the gesture within the gesture box, press p."
+        instructions2 = "Hold for 5 seconds. You must do this " + str(6-counter) + " time(s)"
+        cv.putText(frame, instructions1,(10,25), cv.FONT_HERSHEY_SIMPLEX, 0.6, (255,255,255))
+        cv.putText(frame, instructions2,(10,50), cv.FONT_HERSHEY_SIMPLEX, 0.6, (255,255,255))
+    if (counter>5):
         f = open(sys.argv[1])
         np.save(f, fileName)
         f.close()
+    cv.rectangle(frame, gestureArea[0], gestureArea[1], (0, 255, 0), 1) #adding the gesture area to camera
+    cv.imshow('Frame', frame)
+    keyboard = cv.waitKey(10)
+    if keyboard == ord('p') and counter <=5:
+        saveImages = True
