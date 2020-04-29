@@ -3,3 +3,7 @@
 *.sav
 *.txt
 data/*
+test.py
+checkpoints/*
+checkpoints.zip
+__pycache__/*
