@@ -34,7 +34,7 @@ num_images = 10
 datacount = 0 # We'll use this to tally how many images are in our dataset
 for i in range(0, 10): # Loop over the ten top-level folders
     for j in os.listdir('./gestures/leapGestRecog/0' + str(i) + '/'):
-        if (not j.startswith('.')): # Again avoid hidden folders, change condition here
+        if (not j.startswith('.') and ("01_palm" in j or "02_l" in j)): # Again avoid hidden folders, change condition here
             count = 0 # To tally images of a given gesture
             for k in os.listdir('./gestures/leapGestRecog/0' + 
                                 str(i) + '/' + j + '/'):
@@ -44,7 +44,9 @@ for i in range(0, 10): # Loop over the ten top-level folders
                 path = './gestures/leapGestRecog/0' + str(i) + '/' + j + '/' + k
                 img = cv2.imread(path)
                 img = cv2.cvtColor(img,cv2.COLOR_BGR2GRAY) #convert to gray
-                ret,img = cv2.threshold(img,70,255,cv2.THRESH_BINARY_INV+cv2.THRESH_OTSU)
+                #ret,img = cv2.threshold(img,70,255,cv2.THRESH_BINARY_INV+cv2.THRESH_OTSU)
+                l, w = img.shape
+                img = img[int(l/4):int(l-(l/4)), int(w/4):int(w-(w/4))] #make the images more focused on the hand
                 img = cv2.resize(img, (IMG_SIZE,IMG_SIZE))
                 x_data.append(img)
                 category = path.split("/")[5]
@@ -53,7 +55,7 @@ for i in range(0, 10): # Loop over the ten top-level folders
                 count = count + 1
             datacount = datacount + count
 
-'''
+
 #show the images
 plt.figure(figsize=(10,10))
 for i in range(25):
@@ -64,7 +66,7 @@ for i in range(25):
     plt.imshow(x_data[i], cmap=plt.cm.binary)
     plt.xlabel(y_data[i])
 plt.show()
-'''
+
 x_data = np.array(x_data, dtype = 'float16')
 x_data = x_data.reshape(datacount, IMG_SIZE, IMG_SIZE, 1) # needed to reshape so CNN knows its diff images
 y_data = np.array(y_data)
@@ -102,7 +104,7 @@ model.add(layers.Conv2D(64, (3, 3), activation='relu'))
 model.add(layers.MaxPooling2D((2, 2)))
 model.add(layers.Flatten())
 model.add(layers.Dense(128, activation='relu'))
-model.add(layers.Dense(11, activation='softmax'))
+model.add(layers.Dense(2, activation='softmax'))
 # Configures the model for training
 model.compile(optimizer='adam', loss='sparse_categorical_crossentropy', metrics=['accuracy'])
 # Configure checkpoints to save model weights
