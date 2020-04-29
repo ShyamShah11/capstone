@@ -7,19 +7,7 @@ import sys
 import ast
 import queue
 
-gestures={0:"palm", 1:"l-shape", 2:"fist", 3:"thumb", 4:"index", 5:"ok", 6:"c"}
-np.set_printoptions(threshold=sys.maxsize)
 gestureArea = []
-def predict(fgMask):
-    test = np.array(fgMask)
-    test = np.delete(test, list(range(0, test.shape[0], 2)), axis=0)#reshape array to fit into knn model
-    nx, ny = test.shape 
-    test_reshaped = test.reshape((nx*ny)) 
-    test_reshaped = test_reshaped.reshape(1, -1) #contains a single sample
-
-    loaded_knn = pickle.load(open("trainedmodel.sav", "rb"))
-    result = loaded_knn.predict(test_reshaped)
-    print(result[0])
 
 def createBox (event, x,y, flags, params):
     global gestureArea
@@ -28,12 +16,21 @@ def createBox (event, x,y, flags, params):
     elif event == cv.EVENT_LBUTTONUP:
         # record the ending (x, y) coordinates and indicate that
         # the cropping operation is finished
+        if (x < 0):
+            x = 0
+        if (y < 0):
+            y = 0
+        if (x > frame.shape[1]):
+            x = frame.shape[1] - 1
+        if (y > frame.shape[0]):
+            y = frame.shape[0] - 1
         gestureArea.append((x, y))
         gFile = open("gestureBox.txt", 'w')
         gFile.write("%s\n" % str(gestureArea[0]))
         gFile.write("%s\n" % str(gestureArea[1]))
         gFile.close()
         # draw a rectangle around the region of interest
+        cv.putText(frame, "Click and drag the area where you will perform gestures",(10,25), cv.FONT_HERSHEY_SIMPLEX, 0.6, (255,255,255))
         cv.rectangle(frame, gestureArea[0], gestureArea[1], (0, 255, 0), 1)
         cv.imshow("Frame", frame)
 
@@ -46,6 +43,7 @@ while True:
     frameShow = frame.copy()
     if frame is None:
         break
+    cv.putText(frameShow, "Click and drag the area where you will perform gestures",(10,25), cv.FONT_HERSHEY_SIMPLEX, 0.6, (255,255,255))
     if (len(gestureArea)==2):
         cv.rectangle(frameShow, gestureArea[0], gestureArea[1], (0, 255, 0), 1)
     cv.imshow("Frame", frameShow)
