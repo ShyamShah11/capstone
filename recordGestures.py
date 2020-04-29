@@ -57,7 +57,9 @@ def main():
         if (frameCount % 60 == 0):
             if frameQ.empty() and ssim(cv.cvtColor(frameCheck, cv.COLOR_BGR2GRAY), cv.cvtColor(roiFrame, cv.COLOR_BGR2GRAY))<=0.9:
                 frameQ.put(thresh)
-                return(predict.predict(thresh))
+                gesture, prob = (predict.predict(thresh))
+                if(prob >0.85):
+                    return (gesture, prob)
                 frameQ.get()
             frameCount = 1
             frameCheck = roiFrame
@@ -68,5 +70,5 @@ def main():
         
 
 if __name__ == "__main__":
-    (prob, gest) = main()
+    gest, prob = main()
     print (prob, gest)
