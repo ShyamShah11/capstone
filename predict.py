@@ -5,9 +5,14 @@ import cv2
 from tensorflow.keras import datasets, layers, models
 import numpy as np 
 import logging
+import json
 logging.getLogger('tensorflow').disabled = True
 def predict(img):
     IMG_SIZE = 50
+    num_classes = 1
+    with open('nn_settings.json') as json_file:
+        data = json.load(json_file)
+        num_classes = data['numclasses']
     #create model without weights
     model = models.Sequential()
     model.add(layers.Conv2D(32, (5, 5), activation='relu', input_shape=(IMG_SIZE, IMG_SIZE, 1))) 
@@ -18,7 +23,7 @@ def predict(img):
     model.add(layers.MaxPooling2D((2, 2)))
     model.add(layers.Flatten())
     model.add(layers.Dense(128, activation='relu'))
-    model.add(layers.Dense(3, activation='softmax'))
+    model.add(layers.Dense(num_classes, activation='softmax'))
 
 
     model.load_weights("./checkpoints/chk.ckpt")

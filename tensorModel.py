@@ -1,5 +1,5 @@
 #reference: https://www.kaggle.com/kageyama/keras-hand-gesture-recognition-cnn
-
+#USE THIS TO TRAIN BRAND NEW MODEL WITH 3 INITIAL GESTURES. 
 from __future__ import absolute_import, division, print_function, unicode_literals
 import tempfile
 import tensorflow as tf
@@ -14,8 +14,10 @@ import os
 import random as rn
 from keras.utils import to_categorical
 from sklearn.model_selection import train_test_split
+import json 
 
 np.set_printoptions(threshold=sys.maxsize)
+
 
 lookup = dict()
 reverselookup = dict()
@@ -26,7 +28,6 @@ for j in os.listdir('./gestures/leapGestRecog/00/'):
         lookup[j] = count
         reverselookup[count] = j
         count = count + 1
-lookup
 x_data = []
 y_data = []
 IMG_SIZE = 50
@@ -67,11 +68,24 @@ for i in range(25):
     plt.xlabel(y_data[i])
 plt.show()
 
+
 x_data = np.array(x_data, dtype = 'float16')
 x_data = x_data.reshape(datacount, IMG_SIZE, IMG_SIZE, 1) # needed to reshape so CNN knows its diff images
 y_data = np.array(y_data)
 
+#save settings into json file
+(label) = np.unique(y_data)
+info = {}
+info['numclasses'] = len(label)
+info['labels'] = []
+for i in range (len(label)):
+    info['labels'].append({
+        'name' : reverselookup[label[i]],
+        'index' : int(label[i])
+    })
 
+with open('nn_settings.json', 'w') as outfile:
+    json.dump(info, outfile)
 
 print ("images loaded: ", len(x_data))
 print ("labels loaded: ", len(y_data))
