@@ -1,9 +1,7 @@
-#reference: https://www.tensorflow.org/tutorials/images/cnn
-#https://www.tensorflow.org/tutorials/images/classification
-#https://www.tensorflow.org/tutorials/customization/custom_training_walkthrough
+#reference: https://www.kaggle.com/kageyama/keras-hand-gesture-recognition-cnn
 
 from __future__ import absolute_import, division, print_function, unicode_literals
-
+import tempfile
 import tensorflow as tf
 import sys
 from tensorflow.keras import datasets, layers, models
@@ -12,120 +10,116 @@ import numpy as np
 import sklearn.model_selection
 import ast
 import cv2
+import os
+import random as rn
+from keras.utils import to_categorical
+from sklearn.model_selection import train_test_split
 
 np.set_printoptions(threshold=sys.maxsize)
 
-gestures={0:"palm", 1:"l-shape", 2:"fist", 3:"thumb", 4:"index", 5:"ok", 6:"c", 7:"none", 8:"none"}
+lookup = dict()
+reverselookup = dict()
+count = 0
+for j in os.listdir('./gestures/leapGestRecog/00/'):
+    if not j.startswith('.'): # If running this code locally, this is to 
+                              # ensure you aren't reading in hidden folders
+        lookup[j] = count
+        reverselookup[count] = j
+        count = count + 1
+lookup
+x_data = []
+y_data = []
+IMG_SIZE = 150
+num_images = 10
+datacount = 0 # We'll use this to tally how many images are in our dataset
+for i in range(0, 10): # Loop over the ten top-level folders
+    for j in os.listdir('./gestures/leapGestRecog/0' + str(i) + '/'):
+        if (not j.startswith('.')): # Again avoid hidden folders, change condition here
+            count = 0 # To tally images of a given gesture
+            for k in os.listdir('./gestures/leapGestRecog/0' + 
+                                str(i) + '/' + j + '/'):
+                                # Loop over the images
+                if count >= num_images:
+                    break
+                path = './gestures/leapGestRecog/0' + str(i) + '/' + j + '/' + k
+                img = cv2.imread(path)
+                img = cv2.cvtColor(img,cv2.COLOR_BGR2GRAY) #convert to gray
+                ret,img = cv2.threshold(img,70,255,cv2.THRESH_BINARY_INV+cv2.THRESH_OTSU)
+                img = cv2.resize(img, (IMG_SIZE,IMG_SIZE))
+                x_data.append(img)
+                category = path.split("/")[5]
+                label = int(category.split("_")[2])-1 # Get their indexes based on folder names
+                y_data.append(label) 
+                count = count + 1
+            datacount = datacount + count
 
-
-f=open("./data/white","rb")
-white_X = np.load(f)
-#white_X = np.delete(white_X, list(range(0, len(white_X[0]), 2)), axis=1)#reshape image
-f=open("./data/palm", "rb")
-palm_X = np.load(f)
-f=open("./data/l","rb")
-l_X = np.load(f)
-f=open("./data/fist","rb")
-fist_X = np.load(f)
-f=open("./data/thumb","rb")
-thumb_X = np.load(f)
-f=open("./data/index","rb")
-index_X = np.load(f)
-f=open("./data/ok","rb")
-ok_X = np.load(f)
-f=open("./data/c","rb")
-c_X = np.load(f)
-X = np.concatenate((palm_X, l_X, fist_X, thumb_X, index_X, ok_X, c_X, white_X)) #create array with all image data
-#X = np.concatenate((palm_X, l_X, fist_X, thumb_X, index_X, ok_X, c_X)) #create array with all image data
-print(X.shape) #(700, 240, 640)
-y = np.concatenate((np.zeros(len(palm_X)) , np.ones(len(l_X)), np.ones(len(l_X))*2, np.ones(len(l_X))*3, np.ones(len(l_X))*4, np.ones(len(l_X))*5, np.ones(len(l_X))*6, np.ones(len(white_X))*7)) #create array with actual gestures
-#y = np.concatenate((np.zeros(len(palm_X)) , np.ones(len(l_X)), np.ones(len(l_X))*2, np.ones(len(l_X))*3, np.ones(len(l_X))*4, np.ones(len(l_X))*5, np.ones(len(l_X))*6)) #create array with actual gestures
-print (y.shape)
-
-X_train, X_test, y_train, y_test = sklearn.model_selection.train_test_split(X, y, test_size = 0.2, random_state=4)
-print (X_train.shape, y_train.shape)
-print (X_test.shape, y_test.shape)
-
-# Normalize pixel values to be between 0 and 1
-X_train, X_test = X_train / 255.0, X_test / 255.0
-
-
-
-
+'''
+#show the images
 plt.figure(figsize=(10,10))
 for i in range(25):
     plt.subplot(5,5,i+1)
     plt.xticks([])
     plt.yticks([])
     plt.grid(False)
-    plt.imshow(X_train[i], cmap=plt.cm.binary)
-    plt.xlabel(gestures[y_train[i]])
+    plt.imshow(x_data[i], cmap=plt.cm.binary)
+    plt.xlabel(y_data[i])
 plt.show()
+'''
+x_data = np.array(x_data, dtype = 'float16')
+x_data = x_data.reshape(datacount, IMG_SIZE, IMG_SIZE, 1) # needed to reshape so CNN knows its diff images
+y_data = np.array(y_data)
 
 
+
+print ("images loaded: ", len(x_data))
+print ("labels loaded: ", len(y_data))
+
+
+#split the dataset into test/train
+train_split =0.3
+x_train, x_test, y_train, y_test = train_test_split(x_data,y_data, test_size = train_split, random_state = 42)
+
+'''
+#show the train images
+plt.figure(figsize=(10,10))
+for i in range(25):
+    plt.subplot(5,5,i+1)
+    plt.xticks([])
+    plt.yticks([])
+    plt.grid(False)
+    plt.imshow(np.array(x_test[i].reshape(IMG_SIZE,IMG_SIZE),dtype='uint8'), cmap=plt.cm.binary)
+    plt.xlabel(y_test[i])
+        
+plt.show()
+'''
+# Construction of model
 model = models.Sequential()
-model.add(layers.Conv1D(32, 3, activation='relu', input_shape=(240, 640)))
-model.add(layers.MaxPooling1D((2)))
-model.add(layers.Conv1D(64, 3, activation='relu'))
-model.add(layers.MaxPooling1D(2))
-model.add(layers.Conv1D(64, 3, activation='relu'))
-
-model.summary()
-
+model.add(layers.Conv2D(32, (5, 5), activation='relu', input_shape=(IMG_SIZE, IMG_SIZE, 1))) 
+model.add(layers.MaxPooling2D((2, 2)))
+model.add(layers.Conv2D(64, (3, 3), activation='relu')) 
+model.add(layers.MaxPooling2D((2, 2)))
+model.add(layers.Conv2D(64, (3, 3), activation='relu'))
+model.add(layers.MaxPooling2D((2, 2)))
 model.add(layers.Flatten())
-model.add(layers.Dense(64, activation='relu'))
-model.add(layers.Dense(8)) #number of gestures
+model.add(layers.Dense(128, activation='relu'))
+model.add(layers.Dense(11, activation='softmax'))
+# Configures the model for training
+model.compile(optimizer='adam', loss='sparse_categorical_crossentropy', metrics=['accuracy'])
+# Configure checkpoints to save model weights
+checkpoint_path = "./checkpoints/chk.ckpt"
+cp_callback = tf.keras.callbacks.ModelCheckpoint(filepath=checkpoint_path,
+                                                 save_weights_only=True,
+                                                 verbose=1)
+# Trains the model for a given number of epochs (iterations on a dataset) and validates it.
+model.fit(x_train, y_train, epochs=5, batch_size=64, verbose=2, validation_data=(x_test, y_test),  callbacks=[cp_callback])
 
-model.summary()
+test_loss, test_acc = model.evaluate(x_test, y_test)
+print('Test accuracy: {:2.2f}%'.format(test_acc*100))
 
-model.compile(optimizer='adam',
-              loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
-              metrics=['accuracy'])
-
-history = model.fit(X_train, y_train, epochs=3, 
-                    validation_data=(X_test, y_test))
-
-
-plt.plot(history.history['accuracy'], label='accuracy')
-plt.plot(history.history['val_accuracy'], label = 'val_accuracy')
-plt.xlabel('Epoch')
-plt.ylabel('Accuracy')
-plt.ylim([0.5, 1])
-plt.legend(loc='lower right')
-
-test_loss, test_acc = model.evaluate(X_test,  y_test, verbose=2)
-
-print(test_acc)
+predictions = model.predict(x_test) # Make predictions towards the test set
+y_pred = np.argmax(predictions, axis=1) # Transform predictions into 1-D array with label number
+print (y_pred, y_test)
 
 
-f=open("./testdata/test.txt", "r")
-test = np.array(ast.literal_eval(f.read()))
-f.close()
-#next three lines makes a regular picture taken from cv2 into a 240x300 image for the model
-#test = np.delete(test, list(range(0, test.shape[0], 2)), axis=0)#reshape array to fit into knn model by removing every other row
-#print (np.shape(test))
-test = np.delete(test, [i for i in range(120)], axis=0) #delete first quarter of image (height)
-test = np.delete(test, [i+240 for i in range(120)], axis=0) #delete last quarter of image (height)
-print (np.shape(test))
-cv2.imwrite("./testdata/test.png", test)
-nx, ny = test.shape 
-test = test.reshape(1, nx, ny)
-test = test/ 255.0 #normalize test
-#test_reshaped = test.reshape((nx*ny)) 
-#test_reshaped = test_reshaped.reshape(1, -1) #contains a single sample
 
-test = tf.cast(test, tf.float32)
-#result = model.predict(test)
-#print(result)
-#print(gestures[np.argmax(result[0])])
-predict_dataset = tf.convert_to_tensor(test)
-# training=False is needed only if there are layers with different
-# behavior during training versus inference (e.g. Dropout).
-predictions = model(predict_dataset, training=False)
-
-for i, logits in enumerate(predictions):
-  print (logits)
-  class_idx = tf.argmax(logits).numpy()
-  p = tf.nn.softmax(logits)[class_idx]
-  name = gestures[class_idx]
-  print("Example {} prediction: {} ({:4.1f}%)".format(i, name, 100*p))
+print (tf.math.confusion_matrix(y_test,y_pred))
