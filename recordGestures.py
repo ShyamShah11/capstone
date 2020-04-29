@@ -65,7 +65,7 @@ def main():
         keyboard = cv.waitKey(10)
         if keyboard == ord('q') or keyboard == 27:
             break
-
+        
 
 if __name__ == "__main__":
     gest = main()

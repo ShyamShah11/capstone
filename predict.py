@@ -7,7 +7,7 @@ import numpy as np
 import logging
 logging.getLogger('tensorflow').disabled = True
 def predict(img):
-    IMG_SIZE = 150
+    IMG_SIZE = 50
     #create model without weights
     model = models.Sequential()
     model.add(layers.Conv2D(32, (5, 5), activation='relu', input_shape=(IMG_SIZE, IMG_SIZE, 1))) 
@@ -18,7 +18,7 @@ def predict(img):
     model.add(layers.MaxPooling2D((2, 2)))
     model.add(layers.Flatten())
     model.add(layers.Dense(128, activation='relu'))
-    model.add(layers.Dense(2, activation='softmax'))
+    model.add(layers.Dense(3, activation='softmax'))
 
 
     model.load_weights("./checkpoints/chk.ckpt")

@@ -29,12 +29,12 @@ for j in os.listdir('./gestures/leapGestRecog/00/'):
 lookup
 x_data = []
 y_data = []
-IMG_SIZE = 150
-num_images = 10
+IMG_SIZE = 50
+num_images = 15
 datacount = 0 # We'll use this to tally how many images are in our dataset
 for i in range(0, 10): # Loop over the ten top-level folders
     for j in os.listdir('./gestures/leapGestRecog/0' + str(i) + '/'):
-        if (not j.startswith('.') and ("01_palm" in j or "02_l" in j)): # Again avoid hidden folders, change condition here
+        if (not j.startswith('.') and ("01_palm" in j or "02_l" in j or "03_fist" in j)): # Again avoid hidden folders, change condition here
             count = 0 # To tally images of a given gesture
             for k in os.listdir('./gestures/leapGestRecog/0' + 
                                 str(i) + '/' + j + '/'):
@@ -104,7 +104,7 @@ model.add(layers.Conv2D(64, (3, 3), activation='relu'))
 model.add(layers.MaxPooling2D((2, 2)))
 model.add(layers.Flatten())
 model.add(layers.Dense(128, activation='relu'))
-model.add(layers.Dense(2, activation='softmax'))
+model.add(layers.Dense(3, activation='softmax'))
 # Configures the model for training
 model.compile(optimizer='adam', loss='sparse_categorical_crossentropy', metrics=['accuracy'])
 # Configure checkpoints to save model weights
@@ -113,7 +113,7 @@ cp_callback = tf.keras.callbacks.ModelCheckpoint(filepath=checkpoint_path,
                                                  save_weights_only=True,
                                                  verbose=1)
 # Trains the model for a given number of epochs (iterations on a dataset) and validates it.
-model.fit(x_train, y_train, epochs=5, batch_size=64, verbose=2, validation_data=(x_test, y_test),  callbacks=[cp_callback])
+model.fit(x_train, y_train, epochs=12, batch_size=64, verbose=2, validation_data=(x_test, y_test),  callbacks=[cp_callback])
 
 test_loss, test_acc = model.evaluate(x_test, y_test)
 print('Test accuracy: {:2.2f}%'.format(test_acc*100))
