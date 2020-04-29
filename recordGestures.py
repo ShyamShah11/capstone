@@ -68,5 +68,5 @@ def main():
         
 
 if __name__ == "__main__":
-    gest = main()
-    print (gest)
+    (prob, gest) = main()
+    print (prob, gest)

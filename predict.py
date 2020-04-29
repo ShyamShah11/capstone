@@ -40,7 +40,10 @@ def predict(img):
             count = count + 1
 
     #print (lookup)
-    return (lookup[np.argmax(result[0])]) #get the resulting gesture
+    if max(result[0]) < 0.85:
+        return ("none", 0)
+    else:
+        return (lookup[np.argmax(result[0])], max(result[0])) #get the resulting gesture
 
 if __name__ == "__main__":
     test = cv2.imread("./testdata/test.png")
