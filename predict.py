@@ -6,10 +6,14 @@ from tensorflow.keras import datasets, layers, models
 import numpy as np 
 import logging
 import json
+#disable extra tensorflow warning messages
 logging.getLogger('tensorflow').disabled = True
+
 def predict(img):
+    #need to recreate a network with the same structure (weights do not matter yet)
     IMG_SIZE = 50
     num_classes = 1
+    #get information from json
     lookup = dict()
     with open('nn_settings.json') as json_file:
         data = json.load(json_file)
@@ -28,17 +32,19 @@ def predict(img):
     model.add(layers.Dense(128, activation='relu'))
     model.add(layers.Dense(num_classes, activation='softmax'))
 
-
+    #load in weights from most recent checkpoint
     model.load_weights("./checkpoints/chk.ckpt")
 
+    #format test image to match network specifications
     img = cv2.resize(img, (IMG_SIZE,IMG_SIZE))
     cv2.imwrite("./testdata/test.png", img)
     img = np.array(img, dtype = 'float16')
     img = img.reshape((1, IMG_SIZE, IMG_SIZE, 1)) #for 2D model
+    #predict what is in the image
     result = model.predict(img)
     print(result)
 
-    #print (lookup)
+    #only return a gesture if probability was above 85%
     if max(result[0]) < 0.85:
         return ("none", 0)
     else:
