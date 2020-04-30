@@ -7,7 +7,8 @@ import sys
 import ast
 import queue
 import textwrap
-
+import tensorModel_add as nn
+IMG_SIZE = 50
 #Obtaining the gesture area from settings file
 gFile = open("gestureBox.txt", 'r')
 gestureAreaX = ast.literal_eval((gFile.readline()))
@@ -78,24 +79,27 @@ while True:
             cv.imshow('FG Mask', thresh)
             cv.imshow('delta', delta)
             frameCount +=1
+            thresh = cv.resize(thresh, (IMG_SIZE, IMG_SIZE))
             if fileName is None:
                 fileName = [thresh]
             else:
                 fileName = np.concatenate((fileName, [thresh]))
+                print (fileName.shape)
         else:
             saveImages = False
             frameCount = 0
             counter += 1
             timeCount = 0
-    elif (counter <=5):
+    elif (counter <=3):
         instructions1 = "Make the gesture within the gesture box, press p."
-        instructions2 = "Hold for 5 seconds. You must do this " + str(6-counter) + " time(s)"
+        instructions2 = "Hold for 5 seconds. You must do this " + str(4-counter) + " time(s)"
         cv.putText(frame, instructions1,(10,25), cv.FONT_HERSHEY_SIMPLEX, 0.6, (255,255,255))
         cv.putText(frame, instructions2,(10,50), cv.FONT_HERSHEY_SIMPLEX, 0.6, (255,255,255))
-    if (counter>5):
-        f = open(sys.argv[1])
-        np.save(f, fileName)
-        f.close()
+    if (counter>3):
+        #directly call the function to update nn instead of saving values
+        cv.destroyAllWindows()
+        nn.retrain(fileName)
+        exit()
     cv.rectangle(frame, gestureArea[0], gestureArea[1], (0, 255, 0), 1) #adding the gesture area to camera
     cv.imshow('Frame', frame)
     keyboard = cv.waitKey(10)
