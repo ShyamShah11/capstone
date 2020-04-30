@@ -10,9 +10,12 @@ logging.getLogger('tensorflow').disabled = True
 def predict(img):
     IMG_SIZE = 50
     num_classes = 1
+    lookup = dict()
     with open('nn_settings.json') as json_file:
         data = json.load(json_file)
         num_classes = data['numclasses']
+        for p in data['labels']:
+            lookup[p['index']] = p['name']
     #create model without weights
     model = models.Sequential()
     model.add(layers.Conv2D(32, (5, 5), activation='relu', input_shape=(IMG_SIZE, IMG_SIZE, 1))) 
@@ -34,15 +37,6 @@ def predict(img):
     img = img.reshape((1, IMG_SIZE, IMG_SIZE, 1)) #for 2D model
     result = model.predict(img)
     print(result)
-
-
-    lookup = dict()
-    count = 0
-    for j in os.listdir('./gestures/leapGestRecog/00/'):
-        if not j.startswith('.'): # If running this code locally, this is to 
-                                # ensure you aren't reading in hidden folders
-            lookup[count] = j
-            count = count + 1
 
     #print (lookup)
     if max(result[0]) < 0.85:
