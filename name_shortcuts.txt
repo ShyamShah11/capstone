@@ -1,3 +1,0 @@
-Hold Alt-tab
-Open Task Manager
-Close Application
