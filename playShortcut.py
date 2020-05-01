@@ -1,3 +1,4 @@
+import sys
 import threading
 import mouse
 import keyboard
@@ -38,4 +39,4 @@ def play_shortcut(name):
     m_thread.join()
     k_thread.join() 
 #was used for testing
-#play_shortcut("Grindin'")
+play_shortcut(sys.argv[1])

@@ -1,3 +1,4 @@
+import sys
 import threading
 import mouse
 import keyboard
@@ -37,4 +38,5 @@ def record_Shortcut(name):
     kfile = open("keyboard_shortcuts.txt",'ab+')
     dump(keyboard_events,kfile)
     kfile.close()
-#record_Shortcut("Grindin'")
+
+record_Shortcut(sys.argv[1])
