@@ -1,9 +1,6 @@
 from skimage.metrics import structural_similarity as ssim
 import cv2 as cv
-import sklearn.neighbors
-import numpy as np
 import pickle
-import sys
 import ast
 import queue
 import predict
@@ -48,8 +45,6 @@ def main():
         
         #show the current recording
         cv.imshow('Frame', frame)
-        cv.imshow('FG Mask', thresh)
-        cv.imshow('delta', delta)
 
         #Assuming camera records at 60 fps, check if current recording has remained mostly the same for a second
         #then send that image for processing assuming, an image is not currently being processed
@@ -71,4 +66,3 @@ def main():
 
 if __name__ == "__main__":
     gest, prob = main()
-    print (prob, gest)

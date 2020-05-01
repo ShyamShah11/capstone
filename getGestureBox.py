@@ -1,11 +1,4 @@
-from skimage.metrics import structural_similarity as ssim
 import cv2 as cv
-import sklearn.neighbors
-import numpy as np
-import pickle
-import sys
-import ast
-import queue
 
 gestureArea = []
 
@@ -36,7 +29,6 @@ def createBox (event, x,y, flags, params):
 
 #creating camera object
 capture = cv.VideoCapture(0)
-frameQ = queue.Queue()
 
 while True:
     ret, frame = capture.read()
