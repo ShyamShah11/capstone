@@ -44,6 +44,7 @@ while True:
     if frame is None:
         break
     cv.putText(frameShow, "Click and drag the area where you will perform gestures",(10,25), cv.FONT_HERSHEY_SIMPLEX, 0.6, (255,255,255))
+    cv.putText(frameShow, "Press P when you have the correct size and location ",(10,50), cv.FONT_HERSHEY_SIMPLEX, 0.6, (255,255,255))
     if (len(gestureArea)==2):
         cv.rectangle(frameShow, gestureArea[0], gestureArea[1], (0, 255, 0), 1)
     cv.imshow("Frame", frameShow)
