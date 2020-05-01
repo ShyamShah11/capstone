@@ -6,3 +6,4 @@ sklearn==0.0
 opencv-python==4.1.2.30
 mouse==0.7.1
 keyboard==0.13.4
+scikit-image==0.17
